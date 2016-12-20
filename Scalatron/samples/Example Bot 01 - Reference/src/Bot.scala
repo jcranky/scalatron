@@ -1,3 +1,7 @@
+import Direction45.Direction45
+
+import scala.util.Try
+
 // Example Bot #1: The Reference Bot
 
 /** This bot builds a 'direction value map' that assigns an attractiveness score to
@@ -9,6 +13,7 @@
   *  - dontFireAggressiveMissileUntil
   *  - dontFireDefensiveMissileUntil
   *  - lastDirection
+  *
   * The mini-bots use the following state parameters:
   *  - mood = Aggressive | Defensive | Lurking
   *  - target = remaining offset to target location
@@ -29,6 +34,7 @@ object ControlFunction {
 
     // determine movement direction
     directionValue(lastDirection) += 10 // try to break ties by favoring the last direction
+
     val bestDirection45 = directionValue.zipWithIndex.maxBy(_._1)._2
     val direction = XY.fromDirection45(bestDirection45)
     bot.move(direction)
@@ -133,7 +139,8 @@ object ControlFunction {
     }
   }
 
-  /** Analyze the view, building a map of attractiveness for the 45-degree directions and
+  /**
+    * Analyze the view, building a map of attractiveness for the 45-degree directions and
     * recording other relevant data, such as the nearest elements of various kinds.
     */
   def analyzeViewAsMaster(view: View) = {
@@ -181,7 +188,7 @@ object ControlFunction {
           case _ => 0.0
         }
         val direction45 = cellRelPos.toDirection45
-        directionValue(direction45) += value
+        directionValue(direction45.id) += value
       }
     }
     (directionValue, nearestEnemyMaster, nearestEnemySlave)
@@ -362,7 +369,7 @@ case class XY(x: Int, y: Int) {
   def negateY = XY(x, -y)
 
   /** Returns the direction index with 'Right' being index 0, then clockwise in 45 degree steps. */
-  def toDirection45: Int = {
+  def toDirection45: Direction45 = {
     val unit = signum
     unit.x match {
       case -1 =>
@@ -402,12 +409,17 @@ case class XY(x: Int, y: Int) {
     }
   }
 
-  def rotateCounterClockwise45 =
-    XY.fromDirection45((signum.toDirection45 + 1) % 8)
-  def rotateCounterClockwise90 =
-    XY.fromDirection45((signum.toDirection45 + 2) % 8)
-  def rotateClockwise45 = XY.fromDirection45((signum.toDirection45 + 7) % 8)
-  def rotateClockwise90 = XY.fromDirection45((signum.toDirection45 + 6) % 8)
+  def rotateCounterClockwise45: XY =
+    XY.fromDirection45((signum.toDirection45.id + 1) % 8)
+
+  def rotateCounterClockwise90: XY =
+    XY.fromDirection45((signum.toDirection45.id + 2) % 8)
+
+  def rotateClockwise45: XY =
+    XY.fromDirection45((signum.toDirection45.id + 7) % 8)
+
+  def rotateClockwise90: XY =
+    XY.fromDirection45((signum.toDirection45.id + 6) % 8)
 
   def wrap(boardSize: XY) = {
     val fixedX =
@@ -441,43 +453,49 @@ object XY {
   val Down = XY(0, 1)
   val DownRight = XY(1, 1)
 
-  def fromDirection45(index: Int): XY = index match {
-    case Direction45.Right => Right
-    case Direction45.RightUp => RightUp
-    case Direction45.Up => Up
-    case Direction45.UpLeft => UpLeft
-    case Direction45.Left => Left
-    case Direction45.LeftDown => LeftDown
-    case Direction45.Down => Down
-    case Direction45.DownRight => DownRight
-  }
+  def fromDirection45(index: Int): XY =
+    Try { Direction45(index) }.getOrElse(Direction45.Right) match {
+      case Direction45.Right => Right
+      case Direction45.RightUp => RightUp
+      case Direction45.Up => Up
+      case Direction45.UpLeft => UpLeft
+      case Direction45.Left => Left
+      case Direction45.LeftDown => LeftDown
+      case Direction45.Down => Down
+      case Direction45.DownRight => DownRight
+    }
 
-  def fromDirection90(index: Int): XY = index match {
-    case Direction90.Right => Right
-    case Direction90.Up => Up
-    case Direction90.Left => Left
-    case Direction90.Down => Down
-  }
+  def fromDirection90(index: Int): XY =
+    Try { Direction90(index) }.getOrElse(Direction90.Right) match {
+      case Direction90.Right => Right
+      case Direction90.Up => Up
+      case Direction90.Left => Left
+      case Direction90.Down => Down
+    }
 
   def apply(array: Array[Int]): XY = XY(array(0), array(1))
 }
 
-object Direction45 {
-  val Right = 0
-  val RightUp = 1
-  val Up = 2
-  val UpLeft = 3
-  val Left = 4
-  val LeftDown = 5
-  val Down = 6
-  val DownRight = 7
+object Direction45 extends Enumeration {
+  type Direction45 = Value
+
+  val Right = Value(0)
+  val RightUp = Value(1)
+  val Up = Value(2)
+  val UpLeft = Value(3)
+  val Left = Value(4)
+  val LeftDown = Value(5)
+  val Down = Value(6)
+  val DownRight = Value(7)
 }
 
-object Direction90 {
-  val Right = 0
-  val Up = 1
-  val Left = 2
-  val Down = 3
+object Direction90 extends Enumeration {
+  type Direction90 = Value
+
+  val Right = Value(0)
+  val Up = Value(1)
+  val Left = Value(2)
+  val Down = Value(3)
 }
 
 // -------------------------------------------------------------------------------------------------
