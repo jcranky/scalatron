@@ -5,7 +5,9 @@ import java.io.{FileInputStream, FileOutputStream, File}
 
 object FileUtil {
 
-  /** Manages a closeable resource by applying the given closure to it, then closing the resource.
+  /**
+    * Manages a closeable resource by applying the given closure to it, then closing the resource.
+    *
     * @param closable the closeable resource.
     * @param block the closure to execute with the resource.
     * @tparam T the resource type.
@@ -20,6 +22,7 @@ object FileUtil {
 
   /** code from http://stackoverflow.com/a/3028853
     * Using a later Java version (1.7?) would make this neater.
+    *
     * @throws IOError if there is a problem reading/writing the files
     */
   def copyFile(from: String, to: String): Unit = {
@@ -34,6 +37,7 @@ object FileUtil {
   }
 
   /** Recursively deletes the given directory and all of its contents (CAUTION!)
+    *
     * @param path the path of the directory to begin recursive deletion at
     * @param atThisLevel if true: the directory at `path` is deleted; if false: only its children
     * @param verbose if true, log verbosely to the console
@@ -47,14 +51,12 @@ object FileUtil {
       // caller handles exceptions
       if (itemAtPath.isDirectory) {
         if (verbose) println("  deleting contents of directory at: " + path)
-        val filesInsideUserDir = itemAtPath.listFiles()
-        if (filesInsideUserDir != null) {
-          filesInsideUserDir.foreach(
-            file =>
-              deleteRecursively(file.getAbsolutePath,
-                                atThisLevel = true,
-                                verbose = verbose))
+        Option(itemAtPath.listFiles()).foreach { filesInsideUserDir =>
+          filesInsideUserDir.foreach { file =>
+            deleteRecursively(file.getAbsolutePath, atThisLevel = true, verbose = verbose)
+          }
         }
+
         if (atThisLevel) {
           if (verbose) println("  deleting directory: " + path)
           if (!itemAtPath.delete()) {
@@ -80,6 +82,7 @@ object FileUtil {
 
   /** Loads the contents from a text file using scala.io.Source.
     * Closes the source when it's done.
+    *
     * @param path the path of the file whose contents are to be read.
     * @return the contents of the file
     * @throws Exception if an IO error occurs while reading the file contents.
