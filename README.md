@@ -1,5 +1,4 @@
-Scalatron - Learn Scala With Friends
-=========
+# Scalatron - Learn Scala With Friends
 
 This is the source code for Scalatron, a multi-player programming game in which coders pit bot programs
 (written in Scala) against each other. It is an educational resource for groups of programmers or individuals that
@@ -7,8 +6,17 @@ want to learn more about the Scala programming language or want to hone their Sc
 
 For more information, [visit the Scalatron web site here on Github](http://scalatron.github.com).
 
-To stay current, follow Scalatron on Twitter at [@scalatron](http://twitter.com/scalatron).
+## Creating a distribution
 
+- have [sbt](http://www.scala-sbt.org/) installed
+- run `sbt dist` to create a distribution of Scalatron
+
+## Hacking a bot locally
+
+- have [sbt](http://www.scala-sbt.org/) installed
+- have a distribution of Scalatron installed locally (see above)
+- create a project for your bot via `sbt new jmhofer/scalatron-bot.g8` 
+- see [scalatron-bot.g8](https://github.com/jmhofer/scalatron-bot.g8) for further details
 
 ## License
 
