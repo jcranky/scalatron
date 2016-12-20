@@ -21,3 +21,15 @@ For more information, [visit the Scalatron web site here on Github](http://scala
 ## License
 
 Scalatron is licensed under the Creative Commons Attribution 3.0 Unported License. The documentation, tutorial and source code are intended as a community resource and you can basically use, copy and improve them however you want. Included works are subject to their respective licenses. 
+
+## Run inside a docker container
+
+    docker run -p 8080:8080 -v /tmp/bots:/opt/Scalatron/bots scalatron
+
+## Build a new docker image
+
+Being in the project root directory:
+
+1. Update the version in Dockerfile
+2. Build the project `sbt assembly`
+3. Build an image `docker build -t scalatron .`
