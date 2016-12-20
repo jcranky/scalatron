@@ -1,14 +1,25 @@
 package org.fusesource.scalamd
 
-import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.{Matchers, PropSpec}
+import org.specs2.Specification
 
 import scala.io.Source
 
-class MarkdownSpec extends PropSpec with Matchers with TableDrivenPropertyChecks {
+class MarkdownSpec extends Specification {
+  def is =
+    s2"""
+      MarkdownProcessor should process files correctly $processTemplates
+    """
 
-  val examples = Table(
-    "template",
+  def processTemplates = {
+    foreach(templates) { (name: String) =>
+      val inputText = Source.fromURI(getClass.getResource(s"/$name.text").toURI).mkString
+      val expectedHtml = Source.fromURI(getClass.getResource(s"/$name.html").toURI).mkString.trim
+
+      Markdown(inputText).trim must_=== expectedHtml
+    }
+  }
+
+  val templates = List(
     "Images",
     "TOC",
     "Amps and angle encoding",
@@ -33,12 +44,4 @@ class MarkdownSpec extends PropSpec with Matchers with TableDrivenPropertyChecks
     "Spans inside headers",
     "Macros"
   )
-
-  property("MarkdownProcessor should process files correctly") {
-    forAll(examples) { name =>
-      val inputText = Source.fromURI(getClass.getResource(s"/$name.text").toURI).mkString
-      val expectedHtml = Source.fromURI(getClass.getResource(s"/$name.html").toURI).mkString.trim
-      Markdown(inputText).trim shouldBe expectedHtml
-    }
-  }
 }

@@ -1,12 +1,12 @@
+
 object Versions {
-  val Akka              = "2.4.14"
-  val HttpClient        = "4.5.2"
-  val Jackson           = "2.8.5"
-  val Jersey            = "1.19.3"
-  val Jetty             = "7.6.21.v20160908"
-  val JGit              = "4.5.0.201609210915-r"
-  val ParserCombinators = "1.0.4"
-  val Scalatest         = "3.0.1"
-  val ServletApi        = "2.5"
-  val Specs2            = "3.8.6"
+  val akkaVersion              = "2.4.14"
+  val httpClientVersion        = "4.5.2"
+  val jacksonVersion           = "2.8.5"
+  val jerseyVersion            = "1.19.3"
+  val jettyVersion             = "7.6.21.v20160908"
+  val jGitVersion              = "4.5.0.201609210915-r"
+  val parserCombinatorsVersion = "1.0.4"
+  val servletApiVersion        = "2.5"
+  val specs2Version            = "3.8.6"
 }
