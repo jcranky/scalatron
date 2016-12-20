@@ -3,7 +3,8 @@ import Versions._
 
 object Dependencies {
   val specs2 = Seq(
-    "org.specs2" %% "specs2-core"  % specs2Version % Test
+    "org.specs2" %% "specs2-core"       % specs2Version % Test,
+    "org.specs2" %% "specs2-scalacheck" % specs2Version % Test
   )
 
   val cli = Seq(
@@ -28,4 +29,6 @@ object Dependencies {
   )
 
   val botWar = Seq.empty[ModuleID]
+
+  val samples = specs2
 }

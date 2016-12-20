@@ -91,13 +91,14 @@ lazy val samples = IO
   .listFiles(file("Scalatron") / "samples")
   .filter(!_.isFile)
   .map { sample: File =>
-    sample.getName -> Project(sample.getName.replace(" ", ""),
-                              sample,
-                              settings = commonSettings ++ Seq(
-                                  artifactName in packageBin := ((_, _, _) => "ScalatronBot.jar")
-                                ))
-  }
-  .toMap
+    sample.getName -> Project(
+      sample.getName.replace(" ", ""),
+      sample,
+      settings = commonSettings ++ Seq(
+        artifactName in packageBin := ((_, _, _) => "ScalatronBot.jar"),
+        libraryDependencies ++= Dependencies.samples
+      ))
+  }.toMap
 
 lazy val referenceBot = samples("Example Bot 01 - Reference")
 lazy val tagTeamBot   = samples("Example Bot 02 - TagTeam")
