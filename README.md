@@ -20,7 +20,7 @@ For more information, [visit the Scalatron web site here on Github](http://scala
 
 ## License
 
-Scalatron is licensed under thie Creative Commons Attribution 3.0 Unported License. The documentation, tutorial and source code are intended as a community resource and you can basically use, copy and improve them however you want. Included works are subject to their respective licenses. 
+Scalatron is licensed under the Creative Commons Attribution 3.0 Unported License. The documentation, tutorial and source code are intended as a community resource and you can basically use, copy and improve them however you want. Included works are subject to their respective licenses. 
 
 ## Run inside a docker container
 
