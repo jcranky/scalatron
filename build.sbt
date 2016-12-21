@@ -185,8 +185,6 @@ dist := {
 // this seems to be related: https://github.com/olafurpg/scalafmt/issues/485
 //scalafmtConfig := Some(file(".scalafmt.conf"))
 
-logLevel in Global := Level.Debug
-
 dockerfile in docker := {
   new Dockerfile {
     val artifact: String = dist.value
