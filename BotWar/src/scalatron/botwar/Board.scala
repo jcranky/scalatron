@@ -292,12 +292,8 @@ object Board
 
             // see how many wall cells we can cover without collision or hitting arena boundary
             val wallStartPos = pos
-            var validCount = 0
-            while(updatedBoard.isValidAndVacant(pos, boardSize) && validCount < count) {
-                validCount += 1
-                pos += step
-            }
-
+            val (newPosition, validCount) = newPositionAndValidCount(wallStartPos, count, board, boardSize, step)
+            pos = newPosition
 
             if(step.y == 0 ) {
                 // horizontal
@@ -350,4 +346,14 @@ object Board
         updatedBoard
     }
 
+    def newPositionAndValidCount(initPosition: XY, count: Int, board: Board, boardSize: XY, step: XY): (XY, Int) = {
+        val initPositionCount = (initPosition, 0)
+        def ps: Stream[(XY, Int)] = initPositionCount #:: ps.map { case (p, vc) => (p + step, vc + 1) }
+
+        val (newPosition, validCount): (XY, Int) = ps.takeWhile {
+            case (p, vc) => board.isValidAndVacant(p, boardSize) && vc < count
+        }.lastOption.getOrElse(initPositionCount)
+
+        (newPosition, validCount)
+    }
 }

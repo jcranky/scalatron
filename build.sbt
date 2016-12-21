@@ -4,6 +4,8 @@ name := "Scalatron"
 
 version := "1.4.0"
 
+enablePlugins(sbtdocker.DockerPlugin)
+
 lazy val targetJvm =
   SettingKey[String]("jvm-version", "The version of the JVM the build targets")
 
@@ -57,6 +59,7 @@ lazy val BotWar = project
   .settings(
     commonSettings,
     lintingSettings,
+    libraryDependencies ++= Dependencies.botWar,
     assemblyJarName in assembly := "BotWar.jar"
   )
 
@@ -103,7 +106,7 @@ lazy val samples = IO
 lazy val referenceBot = samples("Example Bot 01 - Reference")
 lazy val tagTeamBot   = samples("Example Bot 02 - TagTeam")
 
-lazy val dist = taskKey[Unit]("Makes the distribution zip file")
+lazy val dist = taskKey[File]("Makes the distribution zip file")
 dist := {
   (assembly in ScalatronCore).value
   (assembly in BotWar).value
@@ -174,9 +177,38 @@ dist := {
     }
     IO.zip(allDistFiles, destFile)
   }
-  zip(distDir, file("./" + zipFileName), "Scalatron/")
+  val zipFile = file(s"./$zipFileName")
+  zip(distDir, zipFile, "Scalatron/")
+
+  zipFile
 }
 
 // scalafmt is this not working fine yet in this project, due to some bug with scala 2.12.1
 // this seems to be related: https://github.com/olafurpg/scalafmt/issues/485
 //scalafmtConfig := Some(file(".scalafmt.conf"))
+
+dockerfile in docker := {
+  new Dockerfile {
+    val artifact = dist.value
+    stageFile(artifact, artifact)
+
+    from("registry.opensource.zalan.do/stups/openjdk:8-53")
+    runShell("apt-get", "update", "&&", "apt-get", "install", "-y", "unzip")
+    workDir("/opt")
+    copyRaw(s"/$artifact", "/opt/")
+    run("unzip", s"/opt/$artifact")
+    volume("/opt/Scalatron/bots")
+    expose(8080)
+    cmd("java", "-jar", "/opt/Scalatron/bin/Scalatron.jar", "-headless", "yes")
+  }
+}
+
+imageNames in docker := Seq(
+  // repository name must be lowercase
+  ImageName(s"${organization.value.toLowerCase}/${name.value.toLowerCase}:latest"),
+  ImageName(
+    namespace = Some(organization.value.toLowerCase),
+    repository = name.value.toLowerCase,
+    tag = Some("v" + version.value)
+  )
+)
