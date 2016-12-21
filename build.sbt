@@ -59,6 +59,7 @@ lazy val BotWar = project
   .settings(
     commonSettings,
     lintingSettings,
+    libraryDependencies ++= Dependencies.botWar,
     assemblyJarName in assembly := "BotWar.jar"
   )
 
