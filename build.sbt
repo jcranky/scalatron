@@ -105,7 +105,7 @@ lazy val samples = IO
 lazy val referenceBot = samples("Example Bot 01 - Reference")
 lazy val tagTeamBot   = samples("Example Bot 02 - TagTeam")
 
-lazy val dist = taskKey[String]("Makes the distribution zip file")
+lazy val dist = taskKey[File]("Makes the distribution zip file")
 dist := {
   (assembly in ScalatronCore).value
   (assembly in BotWar).value
@@ -176,9 +176,10 @@ dist := {
     }
     IO.zip(allDistFiles, destFile)
   }
-  zip(distDir, file("./" + zipFileName), "Scalatron/")
+  val zipFile = file(s"./$zipFileName")
+  zip(distDir, zipFile, "Scalatron/")
 
-  zipFileName
+  zipFile
 }
 
 // scalafmt is this not working fine yet in this project, due to some bug with scala 2.12.1
@@ -187,8 +188,8 @@ dist := {
 
 dockerfile in docker := {
   new Dockerfile {
-    val artifact: String = dist.value
-    stageFile(file(artifact), artifact)
+    val artifact = dist.value
+    stageFile(artifact, artifact)
 
     from("registry.opensource.zalan.do/stups/openjdk:8-53")
     runShell("apt-get", "update", "&&", "apt-get", "install", "-y", "unzip")
