@@ -113,30 +113,28 @@ object Main {
                        outputBaseDirectoryPath: String,
                        verbose: Boolean): Unit = {
     val inputDirectory = new File(inputDirectoryPath)
-    if (inputDirectory.getName.startsWith("_")) {
-      // skip
-    } else {
-      val fileList = inputDirectory.listFiles()
-      if (fileList == null || fileList.isEmpty) {
-        System.err.println(
-          "warning: no files to process in: " + inputDirectoryPath)
-      } else {
-        val (directoryCollection, fileCollection) =
-          fileList.partition(_.isDirectory)
-        directoryCollection.foreach(
-          dir =>
-            processDirectory(dir.getAbsolutePath,
-                             outputDirectoryPath + "/" + dir.getName,
-                             inputBaseDirectoryPath,
-                             outputBaseDirectoryPath,
-                             verbose))
-        fileCollection.foreach(
-          file =>
-            processFile(file.getAbsolutePath,
-                        outputDirectoryPath,
-                        inputBaseDirectoryPath,
-                        outputBaseDirectoryPath,
-                        verbose))
+
+    if (!inputDirectory.getName.startsWith("_")) {
+      val filesOpt = Option(inputDirectory.listFiles()).filter(_.nonEmpty)
+      if (filesOpt.isEmpty)
+        System.err.println("warning: no files to process in: " + inputDirectoryPath)
+
+      filesOpt.foreach { fileList =>
+        val (directoryCollection, fileCollection) = fileList.partition(_.isDirectory)
+        directoryCollection.foreach { dir =>
+          processDirectory(dir.getAbsolutePath,
+            outputDirectoryPath + "/" + dir.getName,
+            inputBaseDirectoryPath,
+            outputBaseDirectoryPath,
+            verbose)
+        }
+        fileCollection.foreach { file =>
+          processFile(file.getAbsolutePath,
+            outputDirectoryPath,
+            inputBaseDirectoryPath,
+            outputBaseDirectoryPath,
+            verbose)
+        }
       }
     }
   }
