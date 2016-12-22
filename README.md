@@ -25,8 +25,8 @@ Scalatron is licensed under the Creative Commons Attribution 3.0 Unported Licens
 
 ## Build a new docker image
 
-    sbt docker
+```sbt docker```
 
 ## Run inside a docker container
 
-    docker run -d -p 8080:8080 -v /tmp/bots:/opt/Scalatron/bots scalatron/scalatron:latest
+```docker run -d -p 8080:8080 -v /tmp/bots:/opt/Scalatron/bots --name scalatron scalatron/scalatron:latest```
