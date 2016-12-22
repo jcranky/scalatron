@@ -103,9 +103,9 @@ class SamplesResource extends Resource {
           case Some(sample) =>
             val s = sample.sourceFiles
             val sourceFiles = s
-              .map(sf => SourcesResource.SourceFile(sf.filename, sf.code))
+              .map(sf => new SourcesResource.SourceFile(sf.filename, sf.code))
               .toArray
-            SourcesResource.SourceFiles(sourceFiles)
+            new SourcesResource.SourceFiles(sourceFiles)
           case None =>
             Response
               .status(
