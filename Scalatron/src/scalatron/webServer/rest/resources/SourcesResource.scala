@@ -75,7 +75,7 @@ class SourcesResource extends ResourceWithUser {
             user.createVersion(versionLabel)
 
             val updatedSourceFiles = sourceFileUpdate.getFiles.map(sf =>
-              Scalatron.SourceFile(sf.fileName, sf.code))
+              Scalatron.SourceFile(sf.getFilename, sf.getCode))
             user.updateSourceFiles(updatedSourceFiles)
 
             // CBB: return information about the optionally created version to the caller as JSON (see 'create version' result)
@@ -154,5 +154,11 @@ object SourcesResource {
     }
   }
 
-  case class SourceFile(fileName: String, code: String)
+  case class SourceFile(var n: String, var c: String) {
+    def this() = this(null, null)
+    def getFilename = n
+    def getCode = c
+    def setFilename(name: String): Unit = { n = name }
+    def setCode(co: String): Unit = { c = co }
+  }
 }
