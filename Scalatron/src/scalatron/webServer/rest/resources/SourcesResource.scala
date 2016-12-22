@@ -26,9 +26,9 @@ class SourcesResource extends ResourceWithUser {
           case Some(user) =>
             val s = user.sourceFiles
             val sourceFiles = s
-              .map(sf => SourcesResource.SourceFile(sf.filename, sf.code))
+              .map(sf => new SourcesResource.SourceFile(sf.filename, sf.code))
               .toArray
-            SourcesResource.SourceFiles(sourceFiles)
+            new SourcesResource.SourceFiles(sourceFiles)
           case None =>
             Response
               .status(
@@ -129,14 +129,14 @@ object SourcesResource {
     }
 
   /** Used for server -> client transfers. */
-  case class SourceFiles(var fileList: Array[SourceFile]) {
+  class SourceFiles(var fileList: Array[SourceFile]) {
     def this() = this(null)
     def getFiles = fileList
     def setFiles(fl: Array[SourceFile]): Unit = { this.fileList = fl }
   }
 
   /** Used for client -> server transfers, includes optional versioning policy and label. */
-  case class SourceFileUpdate(var fileList: Array[SourceFile],
+  class SourceFileUpdate(var fileList: Array[SourceFile],
                               var versionPolicy: String,
                               var versionLabel: String) {
     def this() = this(null, null, null)
@@ -154,7 +154,7 @@ object SourcesResource {
     }
   }
 
-  case class SourceFile(var n: String, var c: String) {
+  class SourceFile(var n: String, var c: String) {
     def this() = this(null, null)
     def getFilename = n
     def getCode = c

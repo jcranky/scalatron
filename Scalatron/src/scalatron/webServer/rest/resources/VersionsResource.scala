@@ -140,9 +140,9 @@ class VersionsResource extends ResourceWithUser {
 
                 // then send the restored source files to the client
                 val sourceFiles = user.sourceFiles
-                  .map(sf => SourcesResource.SourceFile(sf.filename, sf.code))
+                  .map(sf => new SourcesResource.SourceFile(sf.filename, sf.code))
                   .toArray
-                SourcesResource.SourceFiles(sourceFiles)
+                new SourcesResource.SourceFiles(sourceFiles)
             }
           case None =>
             Response
