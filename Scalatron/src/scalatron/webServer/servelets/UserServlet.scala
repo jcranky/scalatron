@@ -1,9 +1,8 @@
 package scalatron.webServer.servelets
 
-import scalatron.core.Scalatron
-import scalatron.core.Scalatron.SourceFile
-import scalatron.core.Scalatron.Constants._
-import javax.servlet.http.{Cookie, HttpServletResponse, HttpServletRequest}
+import javax.servlet.http.{Cookie, HttpServletRequest, HttpServletResponse}
+
+import scala.util.{Failure, Success, Try}
 
 /** Servelet handling `user/<user-name>/task`.
   * Note that this should really all be done via the REST API and Ajax on the client now.
@@ -184,43 +183,40 @@ case class UserServlet(context: WebContext) extends BaseServlet {
   private def handleUserEdit(userName: String,
                              request: HttpServletRequest,
                              response: HttpServletResponse): Unit = {
+
     // Make sure we have a user session - If not we will redirect to the the user prompt
     if (request.getSession(true).getAttribute("user") != userName) {
       response.sendRedirect(s"/user/$userName/loginprompt")
-      return
-    }
 
-    val userOpt = context.scalatron.user(userName)
-    userOpt match {
-      case None =>
-        serveErrorPage(
-          "the user account for '" + userName + "' does not exist",
-          "/admin/list",
-          "return to administration main page",
-          request,
-          response)
-        System.err.println(
-          "error: the user account for '" + userName + "' does not exist")
+    } else {
+      context.scalatron.user(userName) match {
+        case None =>
+          serveErrorPage(
+            s"the user account for '$userName' does not exist",
+            "/admin/list",
+            "return to administration main page",
+            request,
+            response)
+          System.err.println(
+            s"error: the user account for '$userName' does not exist")
 
-      case Some(user) =>
-        val botSources =
-          try {
+        case Some(user) =>
+          Try {
             user.sourceFiles
-          } catch {
-            case t: Throwable =>
+          } match {
+            case Success(_) =>
+              val result = loadRelTextFile("webclient.html").replace("$BotName$", userName)
+              serveString(result, request, response)
+
+            case Failure(t) =>
               serveErrorPage(
-                "could not retrieve sources for user '" + userName + "'",
+                s"could not retrieve sources for user '$userName'",
                 request,
                 response)
               System.err.println(
-                "error: failed to retrieve sources for '" + userName + "': " + t)
-              return
+                s"error: failed to retrieve sources for '$userName': $t")
           }
-
-        val result =
-          loadRelTextFile("webclient.html").replace("$BotName$", userName)
-
-        serveString(result, request, response)
+      }
     }
   }
 }
